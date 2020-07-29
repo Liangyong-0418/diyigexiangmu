@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+    <!--jobDetail-->
+   <!-- <bean id="jobDetailFactoryBean" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="com.test.job.MyJob"></property>
+        <property name="durability" value="true"></property>
+    </bean>-->
+    <!--自定义作业工具类，不继承QuartzJobBean-->
+    <bean id="jobDetailFactoryBean" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject">
+            <bean class="com.test.job.MyJob2"></bean>
+        </property>
+        <property name="targetMethod" value="test"></property>
+        <!--表示是否并发执行-->
+        <property name="concurrent" value="false"></property>
+    </bean>
+    <!--Trigger -->
+   <!-- <bean id="simpleTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+        <property name="jobDetail" ref="jobDetailFactoryBean"></property>
+        <property name="repeatInterval" value="2000"></property>&lt;!&ndash; 每2秒调度一次 &ndash;&gt;
+        <property name="startDelay" value="0"></property>&lt;!&ndash; 调度工厂实例化后，经过5秒开始执行调度 &ndash;&gt;
+    </bean>-->
+    <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobDetailFactoryBean"></property>
+        <property name="cronExpression" value="0/10 * * * * ?"></property>
+    </bean>
+
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+     <property name="triggers">
+         <list>
+             <!--<ref bean="simpleTrigger"></ref>-->
+             <ref bean="cronTrigger"></ref>
+         </list>
+     </property>
+    </bean>
+</beans>
